@@ -2,6 +2,20 @@
 
 ## 音声入出力
 
+### HTML audio
+
+- audio tag
+  https://developer.mozilla.org/ja/docs/Web/HTML/Element/audio
+
+- HTMLAudioElement
+  https://developer.mozilla.org/ja/docs/Web/API/HTMLAudioElement
+  
+- HTMLMediaElement
+  https://developer.mozilla.org/ja/docs/Web/API/HTMLMediaElement
+ 
+  - play()
+  - pause()
+
 ### マイクの使用
 
 https://developer.mozilla.org/ja/docs/Web/API/MediaDevices/getUserMedia
@@ -23,9 +37,17 @@ https://developer.mozilla.org/ja/docs/Web/Security/Secure_Contexts
 
 https://developer.mozilla.org/ja/docs/Web/API/Web_Speech_API/Using_the_Web_Speech_API
 
+### 録音
+
+https://developer.mozilla.org/ja/docs/Web/API/MediaStream_Recording_API
+
 ### オーディオAPI
 
 https://developer.mozilla.org/ja/docs/Web/API/Web_Audio_API
+
+#### Basic Concept
+
+https://developer.mozilla.org/ja/docs/Web/API/Web_Audio_API/Basic_concepts_behind_Web_Audio_API
 
 ## GitHub
 
