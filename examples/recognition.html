@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>recognition</title>
+</head>
+<body>
+    <span style="display: block; border: 1px solid black; height: 5em;"></span> 
+    <audio controls style="display: block"></audio>
+    <button data-running="false">Start</button>
+    <script>
+        var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
+
+        function config(stream) {
+            const button = document.querySelector("button");    
+
+            const recorder = new MediaRecorder(stream);
+            var chunks = [];
+
+            recorder.ondataavailable = (event) => {
+                console.log("data-available");
+                if (event.data.size > 0) {
+                    chunks.push(event.data);
+                }
+            };
+            recorder.onstop = () => { 
+                const blob = new Blob(chunks, {
+                    type: "audio/mpeg"
+                });
+                chunks = [];
+                const url = URL.createObjectURL(blob);
+                const audio = document.querySelector("audio");
+                audio.src = url;
+                audio.load();
+            };
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = "ja";
+
+            recognition.onresult = (event) => {
+                const text = event.results[0][0].transcript;
+                const span = document.querySelector("span");
+                span.textContent = text;
+            }
+
+            recognition.onstop = () => {
+                recorder.stop();
+                button.textContent = "Start";
+            }
+
+            button.onclick = function () {
+                if (this.dataset.running == "false") {
+                    recorder.start();
+                    recognition.start();
+                    button.textContent = "Stop";
+                    this.dataset.running = "true";
+                } else {
+                    recorder.stop();
+                    recognition.stop();
+                    button.textContent = "Start";
+                    this.dataset.runnign = "false";
+                }
+            }
+        }
+
+        if (navigator.mediaDevices) {
+            navigator.mediaDevices
+                .getUserMedia({
+                    video: false,
+                    audio: true
+                }).then(config);
+        }
+    </script>
+</body>
+</html>

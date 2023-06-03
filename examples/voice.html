@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>voice recorder</title>
+</head>
+<body>
+    <audio controls></audio>
+    <button data-recording="false">Record/Stop</button>
+    <script>
+        audioContext = new window.AudioContext();
+        audio = document.querySelector("audio");
+        button = document.querySelector("button");
+        
+        function config(stream) {
+            mediaRecorder = new window.MediaRecorder(stream);
+            recordedChunks = [];
+            button.onclick = function(event) {
+                if (this.dataset.recording == "true") {
+                    mediaRecorder.stop(); 
+                    this.dataset.recording = "false";
+                } else {
+                    mediaRecorder.start();
+                    this.dataset.recording = "true";
+                }
+            };
+            mediaRecorder.ondataavailable = (event) => {
+                console.log("data-available");
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+            mediaRecorder.onstop = () => { 
+                const blob = new Blob(recordedChunks, {
+                    type: "audio/mpeg"
+                });
+                recordedChunks = [];
+                const url = URL.createObjectURL(blob);
+                const audio = document.querySelector("audio");
+                audio.src = url;
+                audio.load();
+            };
+        }
+
+        if (navigator.mediaDevices) {
+            navigator.mediaDevices
+                .getUserMedia({
+                    video: false,
+                    audio: true
+                }).then(config);
+        }
+    </script>
+</body>
+</html>

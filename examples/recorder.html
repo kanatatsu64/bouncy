@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>recorder</title>
+</head>
+<body>
+    <audio id="input" src="LIFE.wav" type="audio/wav"></audio> 
+    <audio id="output" controls></audio> 
+    <button id="play" data-playing="false">Start/Pause</button>
+    <button id="record" data-recording="false">Record/Stop</button>
+    <script>
+        const audioContext = new window.AudioContext();
+        const audioElement = document.querySelector("#input");
+        const track = audioContext.createMediaElementSource(audioElement);
+        const dest = audioContext.createMediaStreamDestination();
+        const mediaRecorder = new window.MediaRecorder(dest.stream);
+        const recordedChunks = [];
+
+        track.connect(audioContext.destination);
+        track.connect(dest);
+
+        const playButton = document.querySelector("#play");
+        const recordButton = document.querySelector("#record");
+
+        playButton.onclick = function () {
+            if (this.dataset.playing == "false") {
+                audioElement.play();
+                this.dataset.playing = "true";
+            } else {
+                audioElement.pause();
+                this.dataset.playing = "false";
+            }
+        }
+
+        recordButton.onclick = function() {
+            if (this.dataset.recording == "false") {
+                mediaRecorder.start();
+                this.dataset.recording = "true";
+            } else {
+                mediaRecorder.stop();
+                this.dataset.recording = "false";
+            }
+        }
+
+        mediaRecorder.ondataavailable = (event) => {
+            console.log("data-available");
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+
+        mediaRecorder.onstop = () => { 
+            const blob = new Blob(recordedChunks, {
+                type: "audio/mpeg"
+            });
+            const url = URL.createObjectURL(blob);
+            const audio = document.querySelector("#output");
+            audio.src = url;
+        }
+    </script>
+</body>
+</html>
