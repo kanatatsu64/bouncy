@@ -10,7 +10,7 @@ function configure(_stream) {
     track.connect(audioContext.destination);
     track.connect(dest);
 
-    const stream = dest.stream; // _stream
+    const stream = _stream; // dest.stream
 
     const recorder = new window.MediaRecorder(stream);
     let chunks = [];
