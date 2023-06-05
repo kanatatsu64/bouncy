@@ -1,16 +1,12 @@
 import AMRecorder from "./src/AMRecorder.js";
 import BtnControl from "./src/BtnControl.js";
+import MockStream from "./src/MockStream.js";
 
 function configure(_stream) {
-    const audioContext = new window.AudioContext();
-    const audioElement = document.querySelector("audio#input");
-    const track = audioContext.createMediaElementSource(audioElement);
-    const dest = audioContext.createMediaStreamDestination();
+    const audio = document.querySelector("audio#input");
+    const mock = new MockStream(audio);
 
-    track.connect(audioContext.destination);
-    track.connect(dest);
-
-    const stream = _stream; // dest.stream
+    const stream = _stream; // mock.stream;
 
     const recorder = new window.MediaRecorder(stream);
     let chunks = [];
