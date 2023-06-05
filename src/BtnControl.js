@@ -6,7 +6,9 @@ class BtnControl {
         this.downTime = 0;
         this.isTouch = false;
 
-        const _onDown = () => {
+        const _onDown = (event) => {
+            event.preventDefault();
+
             if (this.isDown) {
                 return;
             }
@@ -22,7 +24,9 @@ class BtnControl {
             }, this.thTime);
         }
 
-        const _onUp = () => {
+        const _onUp = (event) => {
+            event.preventDefault();
+
             if (!this.isDown) {
                 return;
             }
