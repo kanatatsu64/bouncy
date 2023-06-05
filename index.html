@@ -7,5 +7,282 @@
     <title>bouncy</title>
 </head>
 <body>
+    <audio id="input" src="examples/LIFE.wav" type="audio/wav" controls></audio> 
+    <audio controls id="output"></audio>
+    <button></button>
+    <style>
+        button {
+            display: block;
+            height: 5em;
+            width: 5em;
+            background-color: red;
+            border: 0.3em solid darkred;
+            border-radius: 50%;
+        }
+        button.on {
+            background-color: darkred;
+        }
+        button::before {
+            display: block;
+            height: 1em;
+            width: 1em;
+            background-color: black;
+        }
+    </style>
+    <script>
+        class AMRecorder {
+            constructor (start, stop) {
+                // state: init | trans | rec | shot | err
+                this.state = "init";
+                this.start = start;
+                this.stop = stop;
+            }
+
+            toInit() {
+                switch (this.state) {
+                    case "init":
+                        return true;
+                    case "rec":
+                    case "shot":
+                        var res = this.stop();
+                        if (res) {
+                            this.state = "init";
+                            return true;
+                        } else {
+                            this.state = "err";
+                            return false;
+                        }
+                    default:
+                        this.state = "err";
+                        return false;
+                }
+            }
+
+            toTrans() {
+                switch (this.state)  {
+                    case "init":
+                        var res = this.start();
+                        if (res) {
+                            this.state = "trans";
+                            return true;
+                        } else {
+                            this.state = "err";
+                            return false;
+                        }
+                    default:
+                        this.state = "err";
+                        return false;
+                }
+            }
+
+            toRec() {
+                switch (this.state) {
+                    case "trans":
+                        this.state = "rec";
+                        return true;
+                    default:
+                        this.state = "err";
+                        return false;
+                }
+            }
+
+            toShot() {
+                switch (this.state) {
+                    case "trans":
+                        this.state = "shot";
+                        return true;
+                    default:
+                        this.state = "err";
+                        return false;
+                }
+            }
+
+            isRecording() {
+                switch (this.state) {
+                    case "init":
+                        return false;
+                    case "trans":
+                    case "rec":
+                    case "shot":
+                        return true;
+                    case "err":
+                        return false;
+                }
+            }
+
+            isErr() {
+                return (this.state == "err");
+            }
+
+            reset() {
+                this.state = "init";
+            }
+        }
+
+        class BtnControl {
+            constructor(button, onDown, onLong, onUp, thTime=500) {
+                this.button = button;
+                this.thTime = thTime;
+                this.isDown = false;
+                this.downTime = 0;
+
+                button.onmousedown = () => {
+                    if (this.isDown) {
+                        return;
+                    }
+
+                    this.isDown = true;
+                    this.downTime = new Date().getTime();
+                    onDown();
+
+                    setTimeout(() => {
+                        if (this.isLongDown()) {
+                            onLong();
+                        }
+                    }, this.thTime);
+                }
+
+                button.onmouseup = () => {
+                    if (!this.isDown) {
+                        return;
+                    }
+
+                    this.isDown = false;
+                    onUp();
+                }
+            }
+
+            isShortDown() {
+                if (!this.isDown) {
+                    return false;
+                }
+
+                const nowTime = new Date().getTime();
+                const duration = nowTime - this.downTime;
+                return (duration < this.thTime);
+            }
+
+            isLongDown() {
+                if (!this.isDown) {
+                    return false;
+                }
+
+                const nowTime = new Date().getTime();
+                const duration = nowTime - this.downTime;
+                return (duration >= this.thTime);
+            }
+        }
+
+        function configure(_stream) {
+            const audioContext = new window.AudioContext();
+            const audioElement = document.querySelector("audio#input");
+            const track = audioContext.createMediaElementSource(audioElement);
+            const dest = audioContext.createMediaStreamDestination();
+
+            track.connect(audioContext.destination);
+            track.connect(dest);
+
+            const stream = dest.stream; // _stream
+
+            const recorder = new window.MediaRecorder(dest.stream);
+            let chunks = [];
+            let recording = false;
+
+            recorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    chunks.push(event.data);
+                }
+            };
+
+            recorder.onstop = () => { 
+                const blob = new Blob(chunks, {
+                    type: "audio/mpeg"
+                });
+                chunks = [];
+
+                const url = URL.createObjectURL(blob);
+                const audio = document.querySelector("audio#output");
+                audio.src = url;
+            }
+
+            function onDown() {
+                switch (amr.state) {
+                    case "init":
+                        amr.toTrans();
+                        break;
+                    case "rec":
+                        break;
+                    default:
+                        alert("error");
+                        break;
+                }
+            }
+
+            function onLong() {
+                switch (amr.state) {
+                    case "trans":
+                        amr.toShot();
+                        break;
+                    case "rec":
+                        break;
+                    default:
+                        alert("error");
+                        break;
+                }
+            }
+
+            function onUp() {
+                switch (amr.state) {
+                    case "trans":
+                        amr.toRec();
+                        break;
+                    case "rec":
+                        amr.toInit();
+                        break;
+                    case "shot":
+                        amr.toInit();
+                        break;
+                    default:
+                        alert("error");
+                        break;
+                }
+            }
+
+            const button = document.querySelector("button");
+            const bc = new BtnControl(button, onDown, onLong, onUp);
+
+            function start() {
+                if (!recording) {
+                    recording = true;
+                    button.classList.add("on");
+                    recorder.start();
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            function stop() {
+                if (recording) {
+                    recording = false;
+                    recorder.stop();
+                    button.classList.remove("on");
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            const amr = new AMRecorder(start, stop);
+        }
+
+        if (navigator.mediaDevices) {
+            navigator.mediaDevices
+                .getUserMedia({
+                    audio: true,
+                    video: false
+                }).then(configure);
+        }
+    </script>
 </body>
 </html>
