@@ -3,8 +3,8 @@ import BtnControl from "./src/BtnControl.js";
 import MockStream from "./src/MockStream.js";
 
 function configure(_stream) {
-    const audio = document.querySelector("audio#input");
-    const mock = new MockStream(audio);
+    // const audio = document.querySelector("audio#input");
+    // const mock = new MockStream(audio);
 
     const stream = _stream; // mock.stream;
 
