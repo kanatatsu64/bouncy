@@ -111,3 +111,6 @@ if (navigator.mediaDevices) {
             video: false
         }).then(configure);
 }
+
+const span = document.querySelector("span");
+span.textContent = new Date().getTime().toString(16);
