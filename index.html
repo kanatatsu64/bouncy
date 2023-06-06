@@ -4,40 +4,26 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css"/>
     <title>bouncy</title>
 </head>
 <body>
     <!--
     <audio id="input" src="examples/LIFE.wav" type="audio/wav" controls></audio> 
     -->
-    <audio controls id="output"></audio>
-    <button></button>
-    <style>
-        button {
-            position: absolute;
-            bottom: 5%;
-            left: 50%;
-            transform: translateX(-50%);
-            display: block;
-            height: 5em;
-            width: 5em;
-            background-color: red;
-            border: 0.3em solid darkred;
-            border-radius: 50%;
-        }
-        button.on {
-            background-color: darkred;
-        }
-        button::before {
-            display: block;
-            height: 1em;
-            width: 1em;
-            background-color: black;
-        }
-        audio {
-            display: block;
-        }
-    </style>
+    <audio id="output" controls></audio>
+    <main>
+        <ul>
+            <li>
+                <button>play</button>
+            </li>
+        </ul>
+    </main>
+    <menu>
+        <li>
+            <button></button>
+        </li>
+    </menu>
     <script type="module" src="index.js"></script>
 </body>
 </html>
