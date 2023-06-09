@@ -31,12 +31,7 @@ async function save(blob) {
     add(blob);
 }
 
-function configure(_stream) {
-    const audio = document.querySelector("audio#input");
-    const mock = new MockStream(audio);
-
-    const stream = _stream; //mock.stream;
-
+function configure(stream) {
     const recorder = new window.MediaRecorder(stream);
     let chunks = [];
     let recording = false;
