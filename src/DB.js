@@ -39,8 +39,6 @@ class DB extends EventTarget {
             const request = window.indexedDB.open(this.name, this.version);
 
             request.onupgradeneeded = (event) => {
-                event.stopPropagation();
-
                 const db = event.target.result;
                 this.schema.forEach(({store, options}) => {
                     db.createObjectStore(store, options); 
@@ -48,12 +46,12 @@ class DB extends EventTarget {
             };
 
             request.onsuccess = (event) => {
-                event.stopPropagation();
-
                 const db = event.target.result;
                 this.db = db;
                 resolve(db);
             };
+
+            request.onerror = reject;
         });
     }
 
