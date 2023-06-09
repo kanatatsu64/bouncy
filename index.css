@@ -11,14 +11,8 @@ body {
 main ul {
   list-style: none;
 }
-main li {
-  border: 2px solid gray;
-  border-width: 2px 0;
-  height: 10px;
-}
-main li button {
-  background-color: lightgray;
-  border: none;
+main ul audio-post {
+  margin: 1em;
 }
 
 menu {

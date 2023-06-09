@@ -11,16 +11,9 @@ body {
 main {
     ul {
         list-style: none;
-    }
 
-    li {
-        border: 2px solid gray;
-        border-width: 2px 0;
-        height: 10px;
-
-        button {
-            background-color: lightgray; 
-            border: none;
+        audio-post {
+            margin: 1em;
         }
     }
 }

@@ -1,12 +1,41 @@
 import AMRecorder from "./src/AMRecorder.js";
 import BtnControl from "./src/BtnControl.js";
 import MockStream from "./src/MockStream.js";
+import AudioPost from "./component/AudioPost.js";
+import Record from "./src/Record.js";
+
+function add(blob) {
+    const ul = document.querySelector("main ul");
+    const li = document.createElement("li");
+    const post = new AudioPost();
+    li.appendChild(post);
+    ul.appendChild(li);
+
+    const url = URL.createObjectURL(blob);
+    post.src = url;
+}
+
+async function init() {
+    const record = new Record();
+    await record.connect();
+    const blobs = await record.list();
+
+    blobs.forEach(add);
+}
+
+async function save(blob) {
+    const record = new Record();
+    await record.connect();
+    await record.save(blob);
+
+    add(blob);
+}
 
 function configure(_stream) {
-    // const audio = document.querySelector("audio#input");
-    // const mock = new MockStream(audio);
+    const audio = document.querySelector("audio#input");
+    const mock = new MockStream(audio);
 
-    const stream = _stream; // mock.stream;
+    const stream = _stream; //mock.stream;
 
     const recorder = new window.MediaRecorder(stream);
     let chunks = [];
@@ -24,9 +53,7 @@ function configure(_stream) {
         });
         chunks = [];
 
-        const url = URL.createObjectURL(blob);
-        const audio = document.querySelector("audio#output");
-        audio.src = url;
+        save(blob);
     }
 
     function onDown() {
@@ -107,3 +134,5 @@ if (navigator.mediaDevices) {
             video: false
         }).then(configure);
 }
+
+init();
