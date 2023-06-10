@@ -31,6 +31,11 @@ migration.add(1, 2, async (db, transaction) => {
 
     return transactions[0];
 });
+migration.add(0, 2, async (db, transaction) => {
+    db.createObjectStore("records", { autoIncrement: true }); 
+
+    return transaction;
+});
 
 class Record {
     static name = "BouncyDB";
