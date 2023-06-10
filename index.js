@@ -4,31 +4,35 @@ import MockStream from "./src/MockStream.js";
 import AudioPost from "./component/AudioPost.js";
 import Record from "./src/Record.js";
 
-function add(blob) {
+function add(data) {
     const ul = document.querySelector("main ul");
     const li = document.createElement("li");
     const post = new AudioPost();
     li.appendChild(post);
     ul.appendChild(li);
 
-    const url = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(data.blob);
     post.src = url;
 }
 
 async function init() {
     const record = new Record();
     await record.connect();
-    const blobs = await record.list();
+    const data = await record.list();
 
-    blobs.forEach(add);
+    data.forEach(add);
 }
 
 async function save(blob) {
+    const data = {
+        blob,
+        script: null
+    };
     const record = new Record();
     await record.connect();
-    await record.save(blob);
+    await record.save(data);
 
-    add(blob);
+    add(data);
 }
 
 function configure(stream) {
@@ -94,7 +98,7 @@ function configure(stream) {
         }
     }
 
-    const button = document.querySelector("button");
+    const button = document.querySelector("button#record");
     const bc = new BtnControl(button, onDown, onLong, onUp);
 
     function start() {
