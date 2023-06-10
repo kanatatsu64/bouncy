@@ -1,6 +1,7 @@
 import DB, { wait } from "./DB.js"
 import Migration from "./Migration.js";
 
+const version = 2;
 const migration = new Migration();
 
 migration.add(0, 1, async (db, transaction) => {
@@ -12,15 +13,15 @@ migration.add(1, 2, async (db, transaction) => {
     var request = transaction.objectStore("records").getAll();
 
     transaction = await wait(request);
-    const chunks = request.result;
+    const blobs = request.result;
 
     db.deleteObjectStore("records");
     db.createObjectStore("records", { autoIncrement: true }); 
 
     const promises = [];
-    for (const chunk of chunks) {
+    for (const blob of blobs) {
         const data = {
-            chunk,
+            blob,
             script: null
         };
         request = transaction.objectStore("records").add(data);
@@ -39,7 +40,7 @@ migration.add(0, 2, async (db, transaction) => {
 
 class Record {
     static name = "BouncyDB";
-    static version = 2;
+    static version = version;
     static store = "records";
 
     constructor() {
