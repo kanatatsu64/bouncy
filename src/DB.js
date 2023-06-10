@@ -1,24 +1,24 @@
+export function wait(request) {
+    return new Promise((resolve, reject) => {
+        request.onsuccess = (event) => resolve(event.target.transaction);
+        request.onerror = reject;
+    }) ;
+}
+
 class DB extends EventTarget {
     static available() {
         return !(window.indexedDB === undefined)
     }
 
-    // schema = [{store: string, options: any}]
-    constructor(name, version, schema) {
+    constructor(name, version) {
         super();
         this.name = name;
         this.version = version;
-        this.schema = schema;
         this.db = null;
     }
 
     ready() {
         return !(this.db === null)
-    }
-
-    has(store) {
-        const res = this.schema.find(({_store, _}) => (_store == store));
-        return !(res === undefined)
     }
 
     destroy() {
@@ -29,7 +29,7 @@ class DB extends EventTarget {
         window.indexedDB.deleteDatabase(this.name);
     }
 
-    async connect() {
+    async connect(migration) {
         return new Promise((resolve, reject) => {
             if (!DB.available()) {
                 const msg = "IndexedDB is not available";
@@ -40,9 +40,8 @@ class DB extends EventTarget {
 
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
-                this.schema.forEach(({store, options}) => {
-                    db.createObjectStore(store, options); 
-                });
+                const transaction = event.target.transaction;
+                migration.migrate(event.oldVersion, event.newVersion, db, transaction);
             };
 
             request.onsuccess = (event) => {

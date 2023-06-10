@@ -1,22 +1,48 @@
-import DB from "./DB.js"
+import DB, { wait } from "./DB.js"
+import Migration from "./Migration.js";
+
+const migration = new Migration();
+
+migration.add(0, 1, async (db, transaction) => {
+    db.createObjectStore("records", { autoIncrement: true }); 
+
+    return transaction;
+});
+migration.add(1, 2, async (db, transaction) => {
+    var request = transaction.objectStore("records").getAll();
+
+    transaction = await wait(request);
+    const chunks = request.result;
+
+    db.deleteObjectStore("records");
+    db.createObjectStore("records", { autoIncrement: true }); 
+
+    const promises = [];
+    for (const chunk of chunks) {
+        const data = {
+            chunk,
+            script: null
+        };
+        request = transaction.objectStore("records").add(data);
+        promises.push(wait(request));
+    }
+    const transactions = await Promise.all(promises);
+    transactions.push(transaction)
+
+    return transactions[0];
+});
 
 class Record {
     static name = "BouncyDB";
-    static version = 1;
+    static version = 2;
     static store = "records";
-    static schema = [{
-        store: "records",
-        options: {
-            autoIncrement: true
-        }
-    }];
 
     constructor() {
-        this.db = new DB(Record.name, Record.version, Record.schema);
+        this.db = new DB(Record.name, Record.version);
     }
 
     async connect() {
-        await this.db.connect();
+        return (await this.db.connect(migration));
     }
 
     async get(key) {
@@ -27,8 +53,8 @@ class Record {
         return (await this.db.getAll(Record.store));
     }
 
-    async save(blob) {
-        await this.db.add(Record.store, blob);
+    async save(data) {
+        await this.db.add(Record.store, data);
     }
 
     async delete(key) {
