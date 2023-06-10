@@ -51,6 +51,11 @@ class Migration {
 
     async migrate(before, after, db, transaction) {
         const trace = this.updates.trace(before, after);
+
+        if (trace === null) {
+            throw new Error(`Migration path is not found: from ${before} to ${after}.`);
+        }
+
         for (const update of trace) {
             transaction = await update(db, transaction);
         }
