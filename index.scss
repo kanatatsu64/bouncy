@@ -8,6 +8,38 @@ body {
     position: relative;
 }
 
+section#speech_account {
+    display: none;
+
+    &.open {
+        display: block;
+    }
+
+    .speech_signup, .speech_login {
+        display: none;
+
+        &.open {
+            display: block;
+        }
+    }
+
+    form {
+        div.speech_info {
+            display: grid;
+            grid-template-columns: repeat(2, 7em);
+        }
+        input {
+            border: 1px solid black;
+
+            &:focus {
+                border: 1px solid black;
+                padding: none;
+                outline: none;
+            }
+        }
+    }
+}
+
 main {
     ul {
         list-style: none;

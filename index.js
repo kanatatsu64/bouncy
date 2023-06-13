@@ -1,18 +1,22 @@
+import { getWaveBlob } from "webm-to-wav-converter"
+
 import AMRecorder from "./src/AMRecorder.js";
 import BtnControl from "./src/BtnControl.js";
 import MockStream from "./src/MockStream.js";
 import AudioPost from "./component/AudioPost.js";
 import Record from "./src/Record.js";
+import Speech from "./src/Speech.js";
+
+const speech = new Speech();
 
 function add(data) {
+    const url = URL.createObjectURL(data.blob);
+
     const ul = document.querySelector("main ul");
     const li = document.createElement("li");
-    const post = new AudioPost();
+    const post = new AudioPost(url, data.script, speech);
     li.appendChild(post);
     ul.appendChild(li);
-
-    const url = URL.createObjectURL(data.blob);
-    post.src = url;
 }
 
 async function init() {
@@ -46,10 +50,8 @@ function configure(stream) {
         }
     };
 
-    recorder.onstop = () => { 
-        const blob = new Blob(chunks, {
-            type: "audio/mpeg"
-        });
+    recorder.onstop = async () => { 
+        const blob = await getWaveBlob(new Blob(chunks)); 
         chunks = [];
 
         save(blob);
@@ -132,6 +134,53 @@ if (navigator.mediaDevices) {
             audio: true,
             video: false
         }).then(configure);
+}
+
+const accountElement = document.querySelector("section#speech_account");
+const signupElements = document.querySelectorAll(".speech_signup");
+const loginElements = document.querySelectorAll(".speech_login");
+const login = document.querySelector("#login");
+const logout = document.querySelector("#logout");
+const register = document.querySelector("#register");
+const form = document.querySelector("form")
+
+if (!speech.loggedin()) {
+    accountElement.classList.add("open");
+    if (speech.exists()) {
+        loginElements.forEach(elem => elem.classList.add("open"));
+    } else {
+        signupElements.forEach(elem => elem.classList.add("open"));
+    }
+}
+
+form.onsubmit = (event) => event.preventDefault();
+
+login.onclick = (event) => {
+    const formData = new FormData(form);
+    const passwd = formData.get("speech_passwd");
+
+    if (!speech.login(passwd)) {
+        alert("Failed to login.");
+        return;
+    }
+    loginElements.forEach(elem => elem.classList.remove("open"));
+    accountElement.classList.remove("open");
+};
+
+register.onclick = (event) => {
+    const formData = new FormData(form);
+    const key = formData.get("speech_key");
+    const region = formData.get("speech_region");
+    const passwd = formData.get("speech_passwd");
+
+    speech.signup(key, region, passwd);
+    accountElement.classList.remove("open");
+};
+
+logout.onclick = (event) => {
+    speech.logout();
+    loginElements.forEach(elem => elem.classList.remove("open"));
+    signupElements.forEach(elem => elem.classList.add("open"));
 }
 
 init();
