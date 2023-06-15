@@ -144,6 +144,15 @@ const logout = document.querySelector("#logout");
 const register = document.querySelector("#register");
 const form = document.querySelector("form")
 
+import("./credentials.json").then(async data => {
+    const speech_key = document.querySelector("#speech_key");
+    const speech_region = document.querySelector("#speech_region");
+    speech_key.value = data.azure.key;
+    speech_region.value = data.azure.region;
+}).catch(err => {
+    console.log(err);
+});
+
 if (!speech.loggedin()) {
     accountElement.classList.add("open");
     if (speech.exists()) {

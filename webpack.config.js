@@ -40,6 +40,11 @@ const config = {
                 type: 'asset'
             },
             {
+                test: /\.json$/i,
+                use: 'json-loader',
+                type: 'javascript/auto'
+            },
+            {
                 test: /\.html?$/i,
                 use: 'html-loader'
             }
