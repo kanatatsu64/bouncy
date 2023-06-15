@@ -5,16 +5,16 @@ import BtnControl from "./src/BtnControl.js";
 import MockStream from "./src/MockStream.js";
 import AudioPost from "./component/AudioPost.js";
 import Record from "./src/Record.js";
-import Speech from "./src/Speech.js";
+import API from "./src/API.js";
 
-const speech = new Speech();
+const api = new API();
 
 function add(data) {
     const url = URL.createObjectURL(data.blob);
 
     const ul = document.querySelector("main ul");
     const li = document.createElement("li");
-    const post = new AudioPost(url, data.script, speech);
+    const post = new AudioPost(url, data.script, api);
     li.appendChild(post);
     ul.appendChild(li);
 }
@@ -136,9 +136,9 @@ if (navigator.mediaDevices) {
         }).then(configure);
 }
 
-const accountElement = document.querySelector("section#speech_account");
-const signupElements = document.querySelectorAll(".speech_signup");
-const loginElements = document.querySelectorAll(".speech_login");
+const accountElement = document.querySelector("section#account");
+const signupElements = document.querySelectorAll(".account_signup");
+const loginElements = document.querySelectorAll(".account_login");
 const login = document.querySelector("#login");
 const logout = document.querySelector("#logout");
 const register = document.querySelector("#register");
@@ -147,15 +147,17 @@ const form = document.querySelector("form")
 import("./credentials.json").then(async data => {
     const speech_key = document.querySelector("#speech_key");
     const speech_region = document.querySelector("#speech_region");
+    const openai_key = document.querySelector("#openai_key");
     speech_key.value = data.azure.key;
     speech_region.value = data.azure.region;
+    openai_key.value = data.openai.key;
 }).catch(err => {
     console.log(err);
 });
 
-if (!speech.loggedin()) {
+if (!api.loggedin()) {
     accountElement.classList.add("open");
-    if (speech.exists()) {
+    if (api.exists()) {
         loginElements.forEach(elem => elem.classList.add("open"));
     } else {
         signupElements.forEach(elem => elem.classList.add("open"));
@@ -166,9 +168,9 @@ form.onsubmit = (event) => event.preventDefault();
 
 login.onclick = (event) => {
     const formData = new FormData(form);
-    const passwd = formData.get("speech_passwd");
+    const passwd = formData.get("passwd");
 
-    if (!speech.login(passwd)) {
+    if (!api.login(passwd)) {
         alert("Failed to login.");
         return;
     }
@@ -178,16 +180,17 @@ login.onclick = (event) => {
 
 register.onclick = (event) => {
     const formData = new FormData(form);
-    const key = formData.get("speech_key");
-    const region = formData.get("speech_region");
-    const passwd = formData.get("speech_passwd");
+    const speech_key = formData.get("speech_key");
+    const speech_region = formData.get("speech_region");
+    const openai_key = formData.get("openai_key");
+    const passwd = formData.get("passwd");
 
-    speech.signup(key, region, passwd);
+    api.signup(speech_key, speech_region, openai_key, passwd);
     accountElement.classList.remove("open");
 };
 
 logout.onclick = (event) => {
-    speech.logout();
+    api.logout();
     loginElements.forEach(elem => elem.classList.remove("open"));
     signupElements.forEach(elem => elem.classList.add("open"));
 }

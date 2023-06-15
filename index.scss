@@ -8,14 +8,14 @@ body {
     position: relative;
 }
 
-section#speech_account {
+section#account {
     display: none;
 
     &.open {
         display: block;
     }
 
-    .speech_signup, .speech_login {
+    .account_signup, .account_login {
         display: none;
 
         &.open {
@@ -24,7 +24,7 @@ section#speech_account {
     }
 
     form {
-        div.speech_info {
+        div.account_info {
             display: grid;
             grid-template-columns: repeat(2, 7em);
         }

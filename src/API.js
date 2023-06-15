@@ -2,19 +2,20 @@ const SDK = require("microsoft-cognitiveservices-speech-sdk");
 import { SpeechConfig, SpeechRecognizer, AudioConfig } from "microsoft-cognitiveservices-speech-sdk";
 import Credential from "./Credential";
 
-const Speech = (function() {
+const API = (function() {
     let secret = undefined;
     let speechConfig = undefined;
 
     return class {
         constructor() {
-            this.credential_key = new Credential("key");
-            this.credential_region = new Credential("region");
+            this.speech_key = new Credential("speech_key");
+            this.speech_region = new Credential("speech_region");
+            this.openai_key = new Credential("openai_key");
         }
 
         init() {
-            const key = this.credential_key.load(secret);
-            const region = this.credential_region.load(secret);
+            const key = this.speech_key.load(secret);
+            const region = this.speech_region.load(secret);
             speechConfig = SpeechConfig.fromSubscription(key, region);
             speechConfig.speechRecognitionLanguage = "ja-JP";
         }
@@ -23,9 +24,10 @@ const Speech = (function() {
             return !!speechConfig;
         }
 
-        signup(key, region, passwd) {
-            this.credential_key.store(key, passwd);
-            this.credential_region.store(region, passwd);
+        signup(speech_key, speech_region, openai_key, passwd) {
+            this.speech_key.store(speech_key, passwd);
+            this.speech_region.store(speech_region, passwd);
+            this.openai_key.store(openai_key, passwd);
             secret = passwd;
             this.init();
         }
@@ -36,10 +38,13 @@ const Speech = (function() {
         }
 
         login(passwd) {
-            if (!this.credential_key.login(passwd)) {
+            if (!this.speech_key.login(passwd)) {
                 return false;
             }
-            if (!this.credential_region.login(passwd)) {
+            if (!this.speech_region.login(passwd)) {
+                return false;
+            }
+            if (!this.openai_key.login(passwd)) {
                 return false;
             }
             secret = passwd;
@@ -56,10 +61,13 @@ const Speech = (function() {
         }
 
         exists() {
-            if (!this.credential_key.exists()) {
+            if (!this.speech_key.exists()) {
                 return false;
             }
-            if (!this.credential_region.exists()) {
+            if (!this.speech_region.exists()) {
+                return false;
+            }
+            if (!this.openai_key.exists()) {
                 return false;
             }
             return true;
@@ -105,15 +113,16 @@ const Speech = (function() {
                 return null;
             }
 
-            const key = this.credential_key.load(secret);
-            const region = this.credential_region.load(secret);
+            const speech_key = this.speech_key.load(secret);
+            const speech_region = this.speech_region.load(secret);
+            const openai_key = this.openai_key.load(secret);
 
             //
             // Commented out for security reason.
             //
-            // console.log([key, region]);
+            // console.log([speech_key, speech_region, openai_key]);
         }
     };
 })();
 
-export default Speech;
+export default API;

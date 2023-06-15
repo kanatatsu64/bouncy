@@ -11,26 +11,26 @@ body {
   position: relative;
 }
 
-section#speech_account {
+section#account {
   display: none;
 }
-section#speech_account.open {
+section#account.open {
   display: block;
 }
-section#speech_account .speech_signup, section#speech_account .speech_login {
+section#account .account_signup, section#account .account_login {
   display: none;
 }
-section#speech_account .speech_signup.open, section#speech_account .speech_login.open {
+section#account .account_signup.open, section#account .account_login.open {
   display: block;
 }
-section#speech_account form div.speech_info {
+section#account form div.account_info {
   display: grid;
   grid-template-columns: repeat(2, 7em);
 }
-section#speech_account form input {
+section#account form input {
   border: 1px solid black;
 }
-section#speech_account form input:focus {
+section#account form input:focus {
   border: 1px solid black;
   padding: none;
   outline: none;

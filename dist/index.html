@@ -11,27 +11,29 @@
     <audio id="input" src="examples/LIFE.wav" type="audio/wav" controls></audio> 
     -->
     <main>
-        <section id="speech_account">
+        <section id="account">
             <form>
-                <div class="speech_signup">
-                    <div class="speech_info">
+                <div class="account_signup">
+                    <div class="account_info">
                         <label for="speech_key">Speech Key</label>
                         <input name="speech_key" id="speech_key" type="text">
                         <label for="speech_region">Speech Region</label>
                         <input name="speech_region" id="speech_region" type="text">
+                        <label for="openai_key">OpenAI Key</label>
+                        <input name="openai_key" id="openai_key" type="text">
                     </div>
                 </div>
-                <div class="speech_signup speech_login">
-                    <div class="speech_info">
-                        <label for="speech_passwd">Password</label>
-                        <input name="speech_passwd" id="speech_passwd" type="text">
+                <div class="account_signup account_login">
+                    <div class="account_info">
+                        <label for="passwd">Password</label>
+                        <input name="passwd" id="passwd" type="text">
                     </div>
                 </div>
             </form>
-            <div class="speech_signup">
+            <div class="account_signup">
                 <button id="register">Register</button>
             </div>
-            <div class="speech_login">
+            <div class="account_login">
                 <button id="login">Login</button>
                 <button id="logout">Logout</button>
             </div>

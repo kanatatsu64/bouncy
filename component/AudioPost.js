@@ -7,7 +7,7 @@ template.innerHTML = html;
 const content = template.content;
 
 class AudioPost extends HTMLElement {
-    constructor(src, script, speech) {
+    constructor(src, script, api) {
         super();
         this.root = this.attachShadow({ mode: "open" });
         this.root.appendChild(content.cloneNode(true));
@@ -17,7 +17,7 @@ class AudioPost extends HTMLElement {
 
         async function loadScript(blob) {
             const file = new File([blob], 'temp.wav');
-            return await speech.recognize(file);
+            return await api.recognize(file);
         }
 
         if (src) {
