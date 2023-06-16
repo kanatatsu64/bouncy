@@ -1,10 +1,13 @@
 const SDK = require("microsoft-cognitiveservices-speech-sdk");
 import { SpeechConfig, SpeechRecognizer, AudioConfig } from "microsoft-cognitiveservices-speech-sdk";
+import { Configuration, OpenAIApi } from "openai";
 import Credential from "./Credential";
+import Conversation from "./Conversation";
 
 const API = (function() {
     let secret = undefined;
     let speechConfig = undefined;
+    let openaiClient = undefined;
 
     return class {
         constructor() {
@@ -14,14 +17,20 @@ const API = (function() {
         }
 
         init() {
-            const key = this.speech_key.load(secret);
-            const region = this.speech_region.load(secret);
-            speechConfig = SpeechConfig.fromSubscription(key, region);
+            const speech_key = this.speech_key.load(secret);
+            const speech_region = this.speech_region.load(secret);
+            speechConfig = SpeechConfig.fromSubscription(speech_key, speech_region);
             speechConfig.speechRecognitionLanguage = "ja-JP";
+
+            const openai_key = this.openai_key.load(secret);
+            const openaiConfig = new Configuration({
+                apiKey: openai_key
+            });
+            openaiClient = new OpenAIApi(openaiConfig);
         }
 
         ready() {
-            return !!speechConfig;
+            return (!!speechConfig) && (!!openaiClient);
         }
 
         signup(speech_key, speech_region, openai_key, passwd) {
@@ -35,6 +44,7 @@ const API = (function() {
         logout() {
             secret = undefined;
             speechConfig = undefined;
+            openaiClient = undefined;
         }
 
         login(passwd) {
@@ -106,6 +116,14 @@ const API = (function() {
                     speechRecognizer.close();
                 });
             });
+        }
+
+        conversation(context=[], model="gpt-3.5-turbo") {
+            if (!this.ready()) {
+                return null;
+            }
+
+            return new Conversation(openaiClient, context, model);
         }
 
         debug() {
