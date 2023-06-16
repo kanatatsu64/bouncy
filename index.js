@@ -144,6 +144,8 @@ const logout = document.querySelector("#logout");
 const register = document.querySelector("#register");
 const form = document.querySelector("form")
 
+let conversation = null;
+
 import("./credentials.json").then(async data => {
     const speech_key = document.querySelector("#speech_key");
     const speech_region = document.querySelector("#speech_region");
@@ -176,6 +178,7 @@ login.onclick = (event) => {
     }
     loginElements.forEach(elem => elem.classList.remove("open"));
     accountElement.classList.remove("open");
+    conversation = api.conversation();
 };
 
 register.onclick = (event) => {
@@ -187,12 +190,32 @@ register.onclick = (event) => {
 
     api.signup(speech_key, speech_region, openai_key, passwd);
     accountElement.classList.remove("open");
+    conversation = api.conversation();
 };
 
 logout.onclick = (event) => {
     api.logout();
     loginElements.forEach(elem => elem.classList.remove("open"));
     signupElements.forEach(elem => elem.classList.add("open"));
+    conversation = null;
+}
+
+function write(msg) {
+    const ul = document.querySelector("main ul");
+    const li = document.createElement("li");
+    li.textContent = msg;
+    ul.appendChild(li);
+}
+
+const say = document.querySelector("#say");
+const textarea = document.querySelector("textarea");
+say.onclick = async () => {
+    if (conversation) {
+        const req = textarea.value;
+        write(req);
+        const rep = await conversation.say(req);
+        write(rep);
+    }
 }
 
 init();
