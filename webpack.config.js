@@ -47,8 +47,20 @@ const config = {
             {
                 test: /\.html?$/i,
                 use: 'html-loader'
+            },
+            {
+                test: /\.ts$/,
+                use: 'ts-loader'
             }
         ]
+    },
+    resolve: {
+        extensions: [
+            '.ts', '.js', '.json'
+        ]
+    },
+    experiments: {
+        asyncWebAssembly: true
     }
 };
 
