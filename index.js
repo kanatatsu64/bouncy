@@ -8,19 +8,23 @@ import Record from "./src/Record.js";
 import API from "./src/API.js";
 
 const api = new API();
+const record = new Record();
 
 function add(data) {
     const url = URL.createObjectURL(data.blob);
 
     const ul = document.querySelector("main ul");
     const li = document.createElement("li");
-    const post = new AudioPost(url, data.script, api);
+    const post = new AudioPost(url, data.script, api, data.id);
+    post.onDelete = async (id) => {
+        await record.delete(id);
+        ul.removeChild(li);
+    };
     li.appendChild(post);
     ul.appendChild(li);
 }
 
 async function init() {
-    const record = new Record();
     await record.connect();
     const data = await record.list();
 
@@ -32,11 +36,10 @@ async function save(blob) {
         blob,
         script: null
     };
-    const record = new Record();
     await record.connect();
-    await record.save(data);
+    const id = await record.save(data);
 
-    add(data);
+    add({ ...data, id });
 }
 
 function configure(stream) {

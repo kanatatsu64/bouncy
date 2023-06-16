@@ -7,12 +7,13 @@ template.innerHTML = html;
 const content = template.content;
 
 class AudioPost extends HTMLElement {
-    constructor(src, script, api) {
+    constructor(src, script, api, id) {
         super();
+        this.id = id;
         this.root = this.attachShadow({ mode: "open" });
         this.root.appendChild(content.cloneNode(true));
         this.audio = this.root.querySelector("audio");
-        this.button = this.root.querySelector("button");
+        this.button = this.root.querySelector("button#script");
         this.p = this.root.querySelector("p");
 
         async function loadScript(blob) {
@@ -73,6 +74,12 @@ class AudioPost extends HTMLElement {
 
     get script() {
         return this.p.textContent;
+    }
+
+    set onDelete(handler) {
+        this.root.querySelector("button#delete").onclick = () => {
+            handler(Number(this.id));
+        };
     }
 }
 

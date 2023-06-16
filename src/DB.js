@@ -61,7 +61,7 @@ class DB extends EventTarget {
 
             request.onsuccess = (event) => {
                 event.stopPropagation();
-                resolve(event);
+                resolve(request.result);
             };
             request.onerror = (event) => {
                 event.stopPropagation();
