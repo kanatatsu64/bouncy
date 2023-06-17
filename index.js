@@ -203,11 +203,26 @@ logout.onclick = (event) => {
     conversation = null;
 }
 
-function write(msg) {
+function newLn() {
+    writeLn("");
+}
+
+function writeLn(msg) {
     const ul = document.querySelector("main ul");
     const li = document.createElement("li");
     li.textContent = msg;
     ul.appendChild(li);
+}
+
+function write(msg) {
+    const ul = document.querySelector("main ul");
+    const lis = ul.querySelectorAll("li");
+    if (lis.length == 0) {
+        writeLn(msg);
+        return;
+    }
+    const li = lis[lis.length-1];
+    li.textContent += msg;
 }
 
 const say = document.querySelector("#say");
@@ -215,9 +230,11 @@ const textarea = document.querySelector("textarea");
 say.onclick = async () => {
     if (conversation) {
         const req = textarea.value;
-        write(req);
-        const rep = await conversation.say(req);
-        write(rep);
+        writeLn(req);
+        newLn();
+        for await (const chunk of conversation.say(req)) {
+            write(chunk);
+        }
     }
 }
 

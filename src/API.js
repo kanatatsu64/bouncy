@@ -27,6 +27,7 @@ const API = (function() {
                 apiKey: openai_key
             });
             openaiClient = new OpenAIApi(openaiConfig);
+            openaiClient.key = openai_key;
         }
 
         ready() {
