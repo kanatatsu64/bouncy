@@ -86,6 +86,27 @@ class DB extends EventTarget {
         });
     }
 
+    async put(store, data, key) {
+        return new Promise((resolve, reject) => {
+            const transaction = this.db.transaction(store, "readwrite");
+            let request = undefined;
+            if (key) {
+                request = transaction.objectStore(store).put(data, key);
+            } else {
+                request = transaction.objectStore(store).put(data);
+            }
+
+            request.onsuccess = (event) => {
+                event.stopPropagation();
+                resolve(request.result);
+            };
+            request.onerror = (event) => {
+                event.stopPropagation();
+                reject(event);
+            };
+        });
+    }
+
     async getAll(store) {
         return new Promise((resolve, reject) => {
             const transaction = this.db.transaction(store, "readwrite");

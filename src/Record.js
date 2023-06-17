@@ -79,6 +79,10 @@ class Record {
         return (await this.db.get(Record.store, key));
     }
 
+    async put(data) {
+        return (await this.db.put(Record.store, data));
+    }
+
     async list() {
         return (await this.db.getAll(Record.store));
     }

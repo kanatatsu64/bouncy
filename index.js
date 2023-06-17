@@ -16,6 +16,11 @@ function add(data) {
     const ul = document.querySelector("main ul");
     const li = document.createElement("li");
     const post = new AudioPost(url, data.script, api, data.id);
+    post.onScript = async (script, id) => {
+        const data = await record.get(id);
+        data.script = script;
+        await record.put(data);
+    }
     post.onDelete = async (id) => {
         await record.delete(id);
         ul.removeChild(li);

@@ -91,7 +91,7 @@ var AudioPost = /*#__PURE__*/function (_HTMLElement) {
     _this.button.dataset.open = "false";
     _this.button.dataset.lock = "false";
     _this.button.onclick = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-      var _res, blob;
+      var _res, blob, _script;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
@@ -107,12 +107,12 @@ var AudioPost = /*#__PURE__*/function (_HTMLElement) {
             }
             _this.p.classList.remove("open");
             _this.button.dataset.open = "false";
-            _context.next = 21;
+            _context.next = 23;
             break;
           case 7:
             _this.button.dataset.lock = "true";
             if (_this.p.textContent) {
-              _context.next = 18;
+              _context.next = 20;
               break;
             }
             _context.next = 11;
@@ -126,12 +126,16 @@ var AudioPost = /*#__PURE__*/function (_HTMLElement) {
             _context.next = 17;
             return loadScript(blob);
           case 17:
-            _this.p.textContent = _context.sent;
-          case 18:
+            _script = _context.sent;
+            _this.p.textContent = _script;
+            if (_this.onScript) {
+              _this.onScript(_script, Number(_this.id));
+            }
+          case 20:
             _this.button.dataset.lock = "false";
             _this.p.classList.add("open");
             _this.button.dataset.open = "true";
-          case 21:
+          case 23:
           case "end":
             return _context.stop();
         }
@@ -216,23 +220,46 @@ function add(data) {
   var ul = document.querySelector("main ul");
   var li = document.createElement("li");
   var post = new _component_AudioPost_js__WEBPACK_IMPORTED_MODULE_4__["default"](url, data.script, api, data.id);
-  post.onDelete = /*#__PURE__*/function () {
-    var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(id) {
+  post.onScript = /*#__PURE__*/function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(script, id) {
+      var data;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return record["delete"](id);
+            return record.get(id);
           case 2:
-            ul.removeChild(li);
-          case 3:
+            data = _context.sent;
+            data.script = script;
+            _context.next = 6;
+            return record.put(data);
+          case 6:
           case "end":
             return _context.stop();
         }
       }, _callee);
     }));
-    return function (_x) {
+    return function (_x, _x2) {
       return _ref.apply(this, arguments);
+    };
+  }();
+  post.onDelete = /*#__PURE__*/function () {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(id) {
+      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.next = 2;
+            return record["delete"](id);
+          case 2:
+            ul.removeChild(li);
+          case 3:
+          case "end":
+            return _context2.stop();
+        }
+      }, _callee2);
+    }));
+    return function (_x3) {
+      return _ref2.apply(this, arguments);
     };
   }();
   li.appendChild(post);
@@ -242,55 +269,55 @@ function init() {
   return _init.apply(this, arguments);
 }
 function _init() {
-  _init = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+  _init = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
     var data;
-    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-      while (1) switch (_context5.prev = _context5.next) {
+    return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+      while (1) switch (_context6.prev = _context6.next) {
         case 0:
-          _context5.next = 2;
+          _context6.next = 2;
           return record.connect();
         case 2:
-          _context5.next = 4;
+          _context6.next = 4;
           return record.list();
         case 4:
-          data = _context5.sent;
+          data = _context6.sent;
           data.forEach(add);
         case 6:
         case "end":
-          return _context5.stop();
+          return _context6.stop();
       }
-    }, _callee5);
+    }, _callee6);
   }));
   return _init.apply(this, arguments);
 }
-function save(_x2) {
+function save(_x4) {
   return _save.apply(this, arguments);
 }
 function _save() {
-  _save = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(blob) {
+  _save = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(blob) {
     var data, id;
-    return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-      while (1) switch (_context6.prev = _context6.next) {
+    return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+      while (1) switch (_context7.prev = _context7.next) {
         case 0:
           data = {
             blob: blob,
             script: null
           };
-          _context6.next = 3;
+          _context7.next = 3;
           return record.connect();
         case 3:
-          _context6.next = 5;
+          _context7.next = 5;
           return record.save(data);
         case 5:
-          id = _context6.sent;
+          id = _context7.sent;
           add(_objectSpread(_objectSpread({}, data), {}, {
             id: id
           }));
         case 7:
         case "end":
-          return _context6.stop();
+          return _context7.stop();
       }
-    }, _callee6);
+    }, _callee7);
   }));
   return _save.apply(this, arguments);
 }
@@ -303,22 +330,22 @@ function configure(stream) {
       chunks.push(event.data);
     }
   };
-  recorder.onstop = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+  recorder.onstop = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
     var blob;
-    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-      while (1) switch (_context2.prev = _context2.next) {
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
         case 0:
-          _context2.next = 2;
+          _context3.next = 2;
           return (0,webm_to_wav_converter__WEBPACK_IMPORTED_MODULE_0__.getWaveBlob)(new Blob(chunks));
         case 2:
-          blob = _context2.sent;
+          blob = _context3.sent;
           chunks = [];
           save(blob);
         case 5:
         case "end":
-          return _context2.stop();
+          return _context3.stop();
       }
-    }, _callee2);
+    }, _callee3);
   }));
   function onDown() {
     switch (amr.state) {
@@ -399,10 +426,10 @@ var register = document.querySelector("#register");
 var form = document.querySelector("form");
 var conversation = null;
 __webpack_require__.e(/*! import() */ "credentials_json").then(__webpack_require__.t.bind(__webpack_require__, /*! ./credentials.json */ "./credentials.json", 23)).then( /*#__PURE__*/function () {
-  var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(data) {
+  var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(data) {
     var speech_key, speech_region, openai_key;
-    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-      while (1) switch (_context3.prev = _context3.next) {
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+      while (1) switch (_context4.prev = _context4.next) {
         case 0:
           speech_key = document.querySelector("#speech_key");
           speech_region = document.querySelector("#speech_region");
@@ -412,12 +439,12 @@ __webpack_require__.e(/*! import() */ "credentials_json").then(__webpack_require
           openai_key.value = data.openai.key;
         case 6:
         case "end":
-          return _context3.stop();
+          return _context4.stop();
       }
-    }, _callee3);
+    }, _callee4);
   }));
-  return function (_x3) {
-    return _ref3.apply(this, arguments);
+  return function (_x5) {
+    return _ref4.apply(this, arguments);
   };
 }())["catch"](function (err) {
   console.log(err);
@@ -491,13 +518,13 @@ function write(msg) {
 }
 var say = document.querySelector("#say");
 var textarea = document.querySelector("textarea");
-say.onclick = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+say.onclick = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
   var req, _iteratorAbruptCompletion, _didIteratorError, _iteratorError, _iterator, _step, chunk;
-  return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-    while (1) switch (_context4.prev = _context4.next) {
+  return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+    while (1) switch (_context5.prev = _context5.next) {
       case 0:
         if (!conversation) {
-          _context4.next = 32;
+          _context5.next = 32;
           break;
         }
         req = textarea.value;
@@ -505,55 +532,55 @@ say.onclick = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime()
         newLn();
         _iteratorAbruptCompletion = false;
         _didIteratorError = false;
-        _context4.prev = 6;
+        _context5.prev = 6;
         _iterator = _asyncIterator(conversation.say(req));
       case 8:
-        _context4.next = 10;
+        _context5.next = 10;
         return _iterator.next();
       case 10:
-        if (!(_iteratorAbruptCompletion = !(_step = _context4.sent).done)) {
-          _context4.next = 16;
+        if (!(_iteratorAbruptCompletion = !(_step = _context5.sent).done)) {
+          _context5.next = 16;
           break;
         }
         chunk = _step.value;
         write(chunk);
       case 13:
         _iteratorAbruptCompletion = false;
-        _context4.next = 8;
+        _context5.next = 8;
         break;
       case 16:
-        _context4.next = 22;
+        _context5.next = 22;
         break;
       case 18:
-        _context4.prev = 18;
-        _context4.t0 = _context4["catch"](6);
+        _context5.prev = 18;
+        _context5.t0 = _context5["catch"](6);
         _didIteratorError = true;
-        _iteratorError = _context4.t0;
+        _iteratorError = _context5.t0;
       case 22:
-        _context4.prev = 22;
-        _context4.prev = 23;
+        _context5.prev = 22;
+        _context5.prev = 23;
         if (!(_iteratorAbruptCompletion && _iterator["return"] != null)) {
-          _context4.next = 27;
+          _context5.next = 27;
           break;
         }
-        _context4.next = 27;
+        _context5.next = 27;
         return _iterator["return"]();
       case 27:
-        _context4.prev = 27;
+        _context5.prev = 27;
         if (!_didIteratorError) {
-          _context4.next = 30;
+          _context5.next = 30;
           break;
         }
         throw _iteratorError;
       case 30:
-        return _context4.finish(27);
+        return _context5.finish(27);
       case 31:
-        return _context4.finish(22);
+        return _context5.finish(22);
       case 32:
       case "end":
-        return _context4.stop();
+        return _context5.stop();
     }
-  }, _callee4, null, [[6, 18, 22, 32], [23,, 27, 31]]);
+  }, _callee5, null, [[6, 18, 22, 32], [23,, 27, 31]]);
 }));
 init();
 __webpack_async_result__();
@@ -37983,16 +38010,21 @@ var DB = /*#__PURE__*/function (_EventTarget) {
       return get;
     }()
   }, {
-    key: "getAll",
+    key: "put",
     value: function () {
-      var _getAll = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(store) {
+      var _put = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(store, data, key) {
         var _this5 = this;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
             case 0:
               return _context4.abrupt("return", new Promise(function (resolve, reject) {
                 var transaction = _this5.db.transaction(store, "readwrite");
-                var request = transaction.objectStore(store).getAll();
+                var request = undefined;
+                if (key) {
+                  request = transaction.objectStore(store).put(data, key);
+                } else {
+                  request = transaction.objectStore(store).put(data);
+                }
                 request.onsuccess = function (event) {
                   event.stopPropagation();
                   resolve(request.result);
@@ -38008,25 +38040,25 @@ var DB = /*#__PURE__*/function (_EventTarget) {
           }
         }, _callee4);
       }));
-      function getAll(_x6) {
-        return _getAll.apply(this, arguments);
+      function put(_x6, _x7, _x8) {
+        return _put.apply(this, arguments);
       }
-      return getAll;
+      return put;
     }()
   }, {
-    key: "delete",
+    key: "getAll",
     value: function () {
-      var _delete2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(store, key) {
+      var _getAll = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(store) {
         var _this6 = this;
         return _regeneratorRuntime().wrap(function _callee5$(_context5) {
           while (1) switch (_context5.prev = _context5.next) {
             case 0:
               return _context5.abrupt("return", new Promise(function (resolve, reject) {
                 var transaction = _this6.db.transaction(store, "readwrite");
-                var request = transaction.objectStore(store)["delete"](key);
+                var request = transaction.objectStore(store).getAll();
                 request.onsuccess = function (event) {
                   event.stopPropagation();
-                  resolve(event);
+                  resolve(request.result);
                 };
                 request.onerror = function (event) {
                   event.stopPropagation();
@@ -38039,7 +38071,38 @@ var DB = /*#__PURE__*/function (_EventTarget) {
           }
         }, _callee5);
       }));
-      function _delete(_x7, _x8) {
+      function getAll(_x9) {
+        return _getAll.apply(this, arguments);
+      }
+      return getAll;
+    }()
+  }, {
+    key: "delete",
+    value: function () {
+      var _delete2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(store, key) {
+        var _this7 = this;
+        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+          while (1) switch (_context6.prev = _context6.next) {
+            case 0:
+              return _context6.abrupt("return", new Promise(function (resolve, reject) {
+                var transaction = _this7.db.transaction(store, "readwrite");
+                var request = transaction.objectStore(store)["delete"](key);
+                request.onsuccess = function (event) {
+                  event.stopPropagation();
+                  resolve(event);
+                };
+                request.onerror = function (event) {
+                  event.stopPropagation();
+                  reject(event);
+                };
+              }));
+            case 1:
+            case "end":
+              return _context6.stop();
+          }
+        }, _callee6);
+      }));
+      function _delete(_x10, _x11) {
         return _delete2.apply(this, arguments);
       }
       return _delete;
@@ -38460,14 +38523,14 @@ var Record = /*#__PURE__*/function () {
       return get;
     }()
   }, {
-    key: "list",
+    key: "put",
     value: function () {
-      var _list = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8() {
+      var _put = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8(data) {
         return _regeneratorRuntime().wrap(function _callee8$(_context8) {
           while (1) switch (_context8.prev = _context8.next) {
             case 0:
               _context8.next = 2;
-              return this.db.getAll(Record.store);
+              return this.db.put(Record.store, data);
             case 2:
               return _context8.abrupt("return", _context8.sent);
             case 3:
@@ -38475,6 +38538,28 @@ var Record = /*#__PURE__*/function () {
               return _context8.stop();
           }
         }, _callee8, this);
+      }));
+      function put(_x12) {
+        return _put.apply(this, arguments);
+      }
+      return put;
+    }()
+  }, {
+    key: "list",
+    value: function () {
+      var _list = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee9() {
+        return _regeneratorRuntime().wrap(function _callee9$(_context9) {
+          while (1) switch (_context9.prev = _context9.next) {
+            case 0:
+              _context9.next = 2;
+              return this.db.getAll(Record.store);
+            case 2:
+              return _context9.abrupt("return", _context9.sent);
+            case 3:
+            case "end":
+              return _context9.stop();
+          }
+        }, _callee9, this);
       }));
       function list() {
         return _list.apply(this, arguments);
@@ -38484,21 +38569,21 @@ var Record = /*#__PURE__*/function () {
   }, {
     key: "save",
     value: function () {
-      var _save = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee9(data) {
-        return _regeneratorRuntime().wrap(function _callee9$(_context9) {
-          while (1) switch (_context9.prev = _context9.next) {
+      var _save = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee10(data) {
+        return _regeneratorRuntime().wrap(function _callee10$(_context10) {
+          while (1) switch (_context10.prev = _context10.next) {
             case 0:
-              _context9.next = 2;
+              _context10.next = 2;
               return this.db.add(Record.store, data);
             case 2:
-              return _context9.abrupt("return", _context9.sent);
+              return _context10.abrupt("return", _context10.sent);
             case 3:
             case "end":
-              return _context9.stop();
+              return _context10.stop();
           }
-        }, _callee9, this);
+        }, _callee10, this);
       }));
-      function save(_x12) {
+      function save(_x13) {
         return _save.apply(this, arguments);
       }
       return save;
@@ -38506,19 +38591,19 @@ var Record = /*#__PURE__*/function () {
   }, {
     key: "delete",
     value: function () {
-      var _delete2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee10(key) {
-        return _regeneratorRuntime().wrap(function _callee10$(_context10) {
-          while (1) switch (_context10.prev = _context10.next) {
+      var _delete2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee11(key) {
+        return _regeneratorRuntime().wrap(function _callee11$(_context11) {
+          while (1) switch (_context11.prev = _context11.next) {
             case 0:
-              _context10.next = 2;
+              _context11.next = 2;
               return this.db["delete"](Record.store, key);
             case 2:
             case "end":
-              return _context10.stop();
+              return _context11.stop();
           }
-        }, _callee10, this);
+        }, _callee11, this);
       }));
-      function _delete(_x13) {
+      function _delete(_x14) {
         return _delete2.apply(this, arguments);
       }
       return _delete;

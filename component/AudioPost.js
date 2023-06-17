@@ -50,7 +50,11 @@ class AudioPost extends HTMLElement {
                 if (!this.p.textContent) {
                     const res = await fetch(this.src);
                     const blob = await res.blob();
-                    this.p.textContent = await loadScript(blob);
+                    const script = await loadScript(blob);
+                    this.p.textContent = script;
+                    if (this.onScript) {
+                        this.onScript(script, Number(this.id));
+                    }
                 }
                 this.button.dataset.lock = "false";
 
